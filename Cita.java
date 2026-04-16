@@ -1,30 +1,42 @@
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+
 public class Cita {
     private Paciente pacienteCita;
-    private String hora, fecha;
+    private LocalTime hora;
+    private LocalDate fecha;
     private Doctor doctorCita;
 
-    public Cita(Paciente pacienteCita, String hora, String fecha, Doctor doctorCita) {
+    public Cita(Paciente pacienteCita, LocalTime hora, LocalDate fecha, Doctor doctorCita) {
         this.pacienteCita = pacienteCita;
         this.hora = hora;
         this.fecha = fecha;
         this.doctorCita = doctorCita;
     }
 
-    //Getters de hora y fecha
-    public String getHora() {
+    //Getters
+    public LocalTime getHora() {
         return hora;
     }
 
-    public String getFecha() {
+    public LocalDate getFecha() {
         return fecha;
     }
 
+    public Paciente getPacienteCita() {
+        return pacienteCita;
+    }
+
+    public Doctor getDoctorCita() {
+        return doctorCita;
+    }
+
     //Setters de hora y fecha
-    public void setHora(String hora) {
+    public void setHora(LocalTime hora) {
         this.hora = hora;
     }
 
-    public void setFecha(String fecha) {
+    public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
 

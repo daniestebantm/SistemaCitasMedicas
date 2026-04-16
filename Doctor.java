@@ -16,7 +16,7 @@ public class Doctor {
         return especialidad;
     }
 
-    public boolean isDisponibilidad() {
+    public boolean getDisponibilidad() {
         return disponibilidad;
     }
 

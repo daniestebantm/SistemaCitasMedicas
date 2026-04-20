@@ -21,6 +21,7 @@ public class ManejoCitas {
     static LocalTime apertura = LocalTime.of(8, 0);
     static LocalTime cierre = LocalTime.of(21, 0);
 
+    //REGISTRAR CITA
     public static void registrarCita(ArrayList<Cita> citas) throws NombreInvalidoException, EdadInvalidaException, FechaInvalidaException, HoraInvalidaException, SimultaneaException, DobleCitaException {
         try {
             Scanner sc = new Scanner(System.in);
@@ -118,6 +119,59 @@ public class ManejoCitas {
         }
     }
 
+    //REAGENDAR CITA
+    public static String reagendarCita(ArrayList<Cita> citas) throws FechaInvalidaException, HoraInvalidaException, SimultaneaException {
+        Scanner sc = new Scanner(System.in);
+        try{
+            System.out.println("Ingrese el nombre del paciente cuya cita desea reagendar:");
+            String pacienteAReagendar = sc.nextLine();
+            for(Cita cita : citas) {
+                if(cita.getPacienteCita().getNombre().equalsIgnoreCase(pacienteAReagendar)) {
+                    System.out.println("Ingrese la nueva fecha de la cita (dd/mm/yyyy):");
+                    String nuevaFechaStr = sc.nextLine();
+                    LocalDate nuevaFecha = LocalDate.parse(nuevaFechaStr, formatoFecha);
+                    if(nuevaFecha.isBefore(fechaActual.plusDays(1)) || nuevaFecha.isAfter(fechaLimite)) {
+                        throw new FechaInvalidaException(fechaActual, fechaLimite, formatoFecha);
+                    }
+                    System.out.println("Ingrese la nueva hora de la cita (hh:mm):");
+                    String nuevaHoraStr = sc.nextLine();
+                    LocalTime nuevaHora = LocalTime.parse(nuevaHoraStr);
+                    if(nuevaHora.isBefore(apertura) || nuevaHora.isAfter(cierre)) {
+                        throw new HoraInvalidaException();
+                    }
+                    for(int x=0;x<citas.size();x++) {
+                        if(citas.get(x).getFecha().equals(nuevaFecha) && citas.get(x).getHora().equals(nuevaHora) && citas.get(x).getDoctorCita().equals(cita.getDoctorCita())) {
+                            throw new SimultaneaException();
+                        }
+                    }
+                    cita.setFecha(nuevaFecha);
+                    cita.setHora(nuevaHora);
+                    return("Cita reagendada con éxito para " + cita.getPacienteCita().getNombre() + " con " + cita.getDoctorCita().getNombre() + " el " + nuevaFecha.format(formatoFecha) + " a las " + nuevaHora.toString() + " horas.");
+                }
+            }
+            return("No se encontró una cita para el paciente " + pacienteAReagendar + ".");
+        }
+        catch(DateTimeParseException d) {
+            System.out.println("Formato de fecha u hora no válido, por favor ingresa la fecha en formato dd/mm/yyyy y la hora en formato hh:mm.");
+            return "";
+        }   
+    }
+
+    //CANCELAR CITA
+    public static String cancelarCita(ArrayList<Cita> citas) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Ingrese el nombre del paciente cuya cita desea cancelar:");
+        String pacienteACancelar = sc.nextLine();
+        for(int x=0;x<citas.size();x++) {
+            if(citas.get(x).getPacienteCita().getNombre().equalsIgnoreCase(pacienteACancelar)) {
+                citas.remove(x);
+                return("Cita cancelada con éxito para " + pacienteACancelar + ".");
+            }
+        }
+        return("No se encontró una cita para el paciente " + pacienteACancelar + ".");
+    }
+    
+    //MAIN
     public static void main(String[] args) { //Horario de atención: 8 - 21 hrs
         ArrayList<Cita> citas = new ArrayList<Cita>();
         
@@ -128,20 +182,31 @@ public class ManejoCitas {
         //Bucle principal del programa, se repite hasta que el usuario decide salir
         while(!salida) {
             try {
-                System.out.println("\n¿Deseas agendar una cita?\n(1) Sí\n(2) No");
+                System.out.println("\n¿Qué acción deseas realizar?\n(1) Agendar una cita\n(2) Reagendar cita\n(3) Cancelar cita\n(4) Salir");
                 int opcion;
                 do {
                     opcion = sc.nextInt();
-                    if(opcion<1||opcion>2) {
+                    if(opcion<1||opcion>4) {
                         System.out.println("Opción no válida, por favor intenta de nuevo.");
                     }
-                }while(opcion<1 || opcion>2);
-                if(opcion==2){ //Termina el programa si el usuario elige no agendar más citas
-                    System.out.println("Gracias por usar el sistema de manejo de citas médicas para la clínica Medisoft.");
-                    salida=true;
-                    break;
+                }while(opcion<1 || opcion>4);
+                switch(opcion) {
+                    case 1:
+                        registrarCita(citas);
+                        break;
+                    case 2:
+                        System.out.println(reagendarCita(citas));
+                        break;
+                    case 3:
+                        System.out.println(cancelarCita(citas));
+                        break;
+                    case 4:
+                        System.out.println("Gracias por usar el sistema de manejo de citas médicas para la clínica Medisoft.");
+                        salida=true;
+                        break;
+                    default:
+                        break;
                 }
-                registrarCita(citas);
             }
             //Catch para todas las excepciones personalizadas y de formato
             catch(NombreInvalidoException n) {

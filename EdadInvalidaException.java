@@ -1,5 +1,5 @@
 public class EdadInvalidaException extends Exception{
-    public EdadInvalidaException(String mensaje){
-        super(mensaje);
+    public EdadInvalidaException(){
+        super("La edad del paciente debe ser un número entero del 0 al 109.");
     }
 }
